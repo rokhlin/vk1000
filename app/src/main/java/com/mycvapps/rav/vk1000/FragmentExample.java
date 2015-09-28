@@ -10,11 +10,11 @@ public class FragmentExample extends BaseAbstractFragment {
 
 
     @Override
-    protected void setSaveInstanceData(Bundle outState) {
+    protected void setSaveInstanceState(Bundle outState) {
     }
 
     @Override
-    protected void getSaveInstanceData(Bundle savedInstanceState) {
+    protected void getSaveInstanceState(Bundle savedInstanceState) {
     }
 
 

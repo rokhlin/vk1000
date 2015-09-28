@@ -5,15 +5,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.vk.sdk.VKSdk;
 import com.vk.sdk.api.VKRequest;
 
 public class MainActivity extends AppCompatActivity {
-
-
-    private VKRequest.VKRequestListener mRequestListener;
+    private final String TAG = "MainActivity.class";
+    private User curUser;
     private VKRequest myRequest;
-    private static String FRAGMENT_TAG = "response_view";
+
 
     public VKRequest getMyRequest() {
         return myRequest;
@@ -27,12 +28,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
-
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
+                .build();
+        ImageLoader.getInstance().init(config);
         if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new SelectorFragment(),FRAGMENT_TAG)
+                    .add(R.id.container, new SelectorFragment(), TAG)
                     .addToBackStack(null)
                     .commit();
         }
@@ -62,28 +65,15 @@ public class MainActivity extends AppCompatActivity {
         Log.d(VKSdk.SDK_TAG, "On destroy");
     }
 
-    public VKRequest.VKRequestListener getmRequestListener() {
-        return mRequestListener;
+
+    public User getCurUser() {
+        return curUser;
     }
 
-    public void setmRequestListener(VKRequest.VKRequestListener mRequestListener) {
-        this.mRequestListener = mRequestListener;
+    public void setCurUser(User curUser) {
+        this.curUser = curUser;
     }
 
-    private void processRequestIfRequired() {
-        VKRequest request = null;
-
-        if (getIntent() != null && getIntent().getExtras() != null && getIntent().hasExtra("request")) {
-            long requestId = getIntent().getExtras().getLong("request");
-            request = VKRequest.getRegisteredRequest(requestId);
-            if (request != null)
-                request.unregisterObject();
-        }
-
-        if (request == null) return;
-        myRequest = request;
-        request.executeWithListener(mRequestListener);
-    }
 
 
     protected BaseAbstractFragment fragmentCreator(Fragments type){
@@ -91,12 +81,19 @@ public class MainActivity extends AppCompatActivity {
 
         switch (type){
             case SelectorFragment:
+                Log.d(TAG, "_________________Load  SelectorFragment");
                 fragment = new SelectorFragment();
                 fragment.setLOADED_LAYOUT(R.layout.fragment_start);
                 break;
             case LoadUserFragment:
+                Log.d(TAG, "_________________Load  LoadUserFragment");
                 fragment = new LoadUserFragment();
                 fragment.setLOADED_LAYOUT(R.layout.fragment_api_call);
+                break;
+            case WallFragment:
+                Log.d(TAG, "_________________Load  WallFragment");
+                fragment = new WallFragment();
+                fragment.setLOADED_LAYOUT(R.layout.fragment_wall);
                 break;
         }
 
@@ -110,28 +107,7 @@ public class MainActivity extends AppCompatActivity {
                 .commit();
     }
 
-//    @Override
-//    protected void onSaveInstanceState(Bundle outState) {
-//        super.onSaveInstanceState(outState);
-//        outState.putCharSequence("response", getFragment().textView.getText());
-//        if (myRequest != null) {
-//            outState.putLong("request", myRequest.registerObject());
-//        }
-//    }
-//
-//    @Override
-//    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-//        super.onRestoreInstanceState(savedInstanceState);
-//        CharSequence response = savedInstanceState.getCharSequence("response");
-//        if (response != null) {
-//            getFragment().textView.setText(response);
-//        }
-//
-//        long requestId = savedInstanceState.getLong("request");
-//        myRequest = VKRequest.getRegisteredRequest(requestId);
-//        if (myRequest != null) {
-//            myRequest.unregisterObject();
-//            myRequest.setRequestListener(mRequestListener);
-//        }
-//    }
+
+
+
 }

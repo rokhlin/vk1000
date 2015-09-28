@@ -74,9 +74,8 @@ public abstract class BaseAbstractFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
-        View v = inflater.inflate(LOADED_LAYOUT, container, false);
-        //textView = (TextView) v.findViewById(R.id.response);
-        return v;
+
+        return inflater.inflate(LOADED_LAYOUT, container, false);
     }
 
     @Override
@@ -179,39 +178,20 @@ public abstract class BaseAbstractFragment extends Fragment
         });
     }
 
-//    @Override
-//    public void onPause() {
-//
-//        super.onPause();
-//
-//        getFragmentManager().findFragmentByTag(FRAGMENT_TAG)
-//                .setRetainInstance(true);
-//    }
-
-
-
-//    @Override
-//    public void onResume() {
-//        super.onResume();
-//        getFragmentManager().findFragmentByTag(FRAGMENT_TAG)
-//                .getRetainInstance();
-//
-//    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        setSaveInstanceData(outState);
+        setSaveInstanceState(outState);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getSaveInstanceData(savedInstanceState);
+        getSaveInstanceState(savedInstanceState);
     }
 
-    protected abstract void setSaveInstanceData(Bundle outState);
-    protected abstract void getSaveInstanceData(Bundle savedInstanceState);
+
 
 
     protected BaseAbstractFragment fragmentCreator(Fragments type){
@@ -223,18 +203,21 @@ public abstract class BaseAbstractFragment extends Fragment
                 break;
             case LoadUserFragment:
                 fragment = new LoadUserFragment();
+            case WallFragment:
+                fragment = new WallFragment();
         }
         return fragment;
     }
 
-    protected void startApiCall(VKRequest request) {
+    protected void startApiCall(VKRequest request,Fragments type) {
 
         setMyRequest(request);//
+        setType(type);
         ((MainActivity)getActivity()).loadFragment(type);
-//        getFragmentManager().beginTransaction()
-//                .add(R.id.container,fragmentCreator(type),type.toString())
-//                .addToBackStack(null)
-//                .commit();
-
     }
+
+    protected abstract void setSaveInstanceState(Bundle outState);
+
+
+    protected abstract void getSaveInstanceState(Bundle savedInstanceState);
 }
