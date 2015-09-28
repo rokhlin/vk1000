@@ -3,6 +3,7 @@ package com.mycvapps.rav.vk1000;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,10 +16,11 @@ import java.util.List;
 import java.util.TimeZone;
 
 public class MyRecyclerAdapter extends RecyclerView.Adapter<CustomViewHolder> {
+    private static String TAG = "MyRecyclerAdapter";
     private List<Post> posts;
     private Context mContext;
-
-
+    private int count = 0;
+    private MyClickListenner myClickListenner;
     public MyRecyclerAdapter(Context context, List<Post> items) {
         this.posts = items;
         this.mContext = context;
@@ -26,14 +28,55 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<CustomViewHolder> {
 
     @Override
     public CustomViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.post_list_item, null);
+        final View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.post_list_item, null);
 
+        view.setTag(count++);
+        Log.d(TAG, "__________________________CustomViewHolder onCreateViewHolder   current=" + (count - 1));
+        Log.d(TAG, "__________________________CustomViewHolder onCreateViewHolder   posts.get(current).getId()=" + posts.get(count-1).getId());
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (myClickListenner != null)
+                    myClickListenner.onClick((Integer)v.getTag());
+            }
+        });
+//                view.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        int current = count;
+//                        count ++;
+//
+//                        Log.d(TAG, "__________________________CustomViewHolder onCreateViewHolder   current=" + current);
+//                        Log.d(TAG, "__________________________CustomViewHolder onCreateViewHolder   posts.get(current).getId()=" + posts.get(current).getId());
+//                        VKRequest request = VKApi.wall().get(VKParameters.from(
+//                                VKApiConst.OFFSET, posts.get(current).getId(),
+//                                VKApiConst.COUNT, 1,
+//                                "filter", "all",
+//                                VKApiConst.VERSION, 5.37
+//                        ));
+//                        BaseAbstractFragment baseAbstractFragment = new WallFragment() {
+//                            @Override
+//                            public void getFragmentViews(View view) {
+//                            }
+//
+//                            @Override
+//                            protected void setSaveInstanceState(Bundle outState) {
+//                            }
+//
+//                            @Override
+//                            protected void getSaveInstanceState(Bundle savedInstanceState) {
+//                            }
+//                        };
+//                        baseAbstractFragment.startApiCall(request, Fragments.WallFragment);
+//
+//                    }
+//                });
         return new CustomViewHolder(view);
 
     }
 
     @Override
-    public void onBindViewHolder(CustomViewHolder customViewHolder, int i) {
+    public void onBindViewHolder(final CustomViewHolder customViewHolder, int i) {
        Post post = posts.get(i);
         List<Attachment> attachments = post.getAttachments();
 
@@ -46,7 +89,7 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<CustomViewHolder> {
         customViewHolder.author.setText(post.getFrom_name());
         @SuppressLint("SimpleDateFormat") SimpleDateFormat f = new SimpleDateFormat("dd.MM.yyyy HH:mm");
         f.setTimeZone(TimeZone.getTimeZone("GMT"));
-        customViewHolder.post_date.setText(f.format(post.getDate()*1000));
+        customViewHolder.post_date.setText(f.format(post.getDate() * 1000));
 
         if(attachments != null){
             Attachment attachment =attachments.get(0);
@@ -76,4 +119,15 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<CustomViewHolder> {
     public int getItemCount() {
         return (posts != null ? posts.size() : 0);
     }
+
+    public void setMyClickListenner(MyClickListenner value)
+    {
+        myClickListenner = value;
+    }
+
+    public interface MyClickListenner
+    {
+        void onClick(int index);
+    }
+
 }

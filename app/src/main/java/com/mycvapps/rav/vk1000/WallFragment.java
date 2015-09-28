@@ -6,7 +6,6 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.vk.sdk.api.VKApi;
 import com.vk.sdk.api.VKApiConst;
@@ -18,10 +17,8 @@ import java.util.HashSet;
 import java.util.List;
 
 public class WallFragment extends BaseAbstractFragment  {
-    public TextView textView;
     private List<Post> postsList;//лист статей
     private HashSet<Integer> ids;
-    private String idsstr;
     private RecyclerView mRecyclerView;
     private MyRecyclerAdapter adapter;
     private ProgressBar progressBar;
@@ -47,19 +44,29 @@ public class WallFragment extends BaseAbstractFragment  {
 
         progressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
         progressBar.setVisibility(View.VISIBLE);
+        VKRequest request = VKApi.wall().get(VKParameters.from(VKApiConst.OWNER_ID, TARGET_USER,
+                VKApiConst.OFFSET, OFFSET,
+                VKApiConst.COUNT, COUNT,
+                "filter", "all",
+                VKApiConst.EXTENDED, 1,
+                VKApiConst.VERSION, 5.37
+        ));
+
+        if(TARGET_USER == 0){
+            request = VKApi.wall().get(VKParameters.from(//VKApiConst.OWNER_ID, "10479140", //заменить String.valueOf(((MainActivity) getActivity()).getCurUser().getId())
+                    VKApiConst.OFFSET, OFFSET,
+                    VKApiConst.COUNT, COUNT,
+                    "filter", "all",
+                    VKApiConst.EXTENDED,1,
+                    VKApiConst.VERSION, 5.37
+            ));
+        }
 
 
-                VKRequest request = VKApi.wall().get(VKParameters.from(VKApiConst.OWNER_ID, "10479140", //заменить String.valueOf(((MainActivity) getActivity()).getCurUser().getId())
-                        VKApiConst.OFFSET, OFFSET,
-                        VKApiConst.COUNT, COUNT,
-                        "filter", "all",
-                        VKApiConst.EXTENDED,1,
-                        VKApiConst.VERSION, 5.37
-                ));
 
-                Log.d(TAG, "__________________________request  =" + request.toString());
+        Log.d(TAG, "__________________________request  =" + request.toString());
 
-                processRequestIfRequired(request);
+        processRequestIfRequired(request);
 
 
 
@@ -74,6 +81,24 @@ public class WallFragment extends BaseAbstractFragment  {
             //парсинг json ответа
             postsList = Post.getPosts(response);
             adapter = new MyRecyclerAdapter(getContext(), postsList);
+            adapter.setMyClickListenner(new MyRecyclerAdapter.MyClickListenner() {
+                @Override
+                public void onClick(int index) {
+                    Log.d(TAG, "__________________________onClick(int index) =" + index);
+                    Log.d(TAG, "__________________________CustomViewHolder onCreateViewHolder   posts.get(current).getId()=" + postsList.get(index).getId());
+                    VKRequest request;
+                    if(TARGET_USER == 0) {
+                        TARGET_USER = 10479140;// ((MainActivity) getActivity()).getCurUser().getId();
+
+                    }
+                     Log.d(TAG, "__________________________ID =====" + TARGET_USER+"_"+ postsList.get(index).getId());
+                        request = VKApi.wall().getById(VKParameters.from(VKApiConst.POSTS, TARGET_USER+"_"+ postsList.get(index).getId(),
+                                VKApiConst.EXTENDED,1,
+                                VKApiConst.VERSION, 5.37));
+
+                    startApiCall(request,Fragments.PostFragment);
+                }
+            });
             mRecyclerView.setAdapter(adapter);
             progressBar.setVisibility(View.GONE);
         }

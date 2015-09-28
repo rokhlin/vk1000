@@ -95,6 +95,11 @@ public class MainActivity extends AppCompatActivity {
                 fragment = new WallFragment();
                 fragment.setLOADED_LAYOUT(R.layout.fragment_wall);
                 break;
+            case PostFragment:
+                Log.d(TAG, "_________________Load  PostFragment");
+                fragment = new PostFragment();
+                fragment.setLOADED_LAYOUT(R.layout.fragment_post);
+                break;
         }
 
         return fragment;

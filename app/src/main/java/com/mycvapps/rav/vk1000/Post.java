@@ -108,15 +108,17 @@ public class Post {
         }
         return posts;
     }
+
     public static List<Post> getPosts(VKResponse response){
         List<Post> posts = null;
         List<GroupVK> groups = null;
         List<User> users = null;
         try {
+            Log.d(TAG, "________ getPosts________response="+response.json.toString());
             JSONArray items = ((JSONObject) response.json.get("response")).getJSONArray("items");
             JSONArray groupVKs = ((JSONObject) response.json.get("response")).getJSONArray("groups");
             JSONArray profiles = ((JSONObject) response.json.get("response")).getJSONArray("profiles");
-            count = (int) ((JSONObject) response.json.get("response")).get("count");
+
 
             Log.d(TAG, "________ getPosts________JSONArray items="+items.toString());
             Log.d(TAG, "__________________________________________________________________________________________________");
@@ -124,13 +126,20 @@ public class Post {
             Log.d(TAG, "__________________________________________________________________________________________________");
             Log.d(TAG, "________ getPosts________JSONArray profiles="+profiles.toString());
             Log.d(TAG, "__________________________________________________________________________________________________");
-            Log.d(TAG, "________ getPosts________count=" + count);
+
             posts = parseItems(items);
             groups = GroupVK.parseItems(groupVKs);
             users = User.fromJSONArray(profiles);
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        try {
+            count = (int) ((JSONObject) response.json.get("response")).get("count");
+            Log.d(TAG, "________ getPosts________count=" + count);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
 
         if (posts != null) {
             for (int i = 0; i <posts.size() ; i++) {

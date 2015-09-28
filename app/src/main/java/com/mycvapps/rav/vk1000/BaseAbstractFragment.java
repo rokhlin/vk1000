@@ -33,6 +33,7 @@ public abstract class BaseAbstractFragment extends Fragment
     protected int LOADED_LAYOUT = R.layout.fragment_start;
     protected int TARGET_GROUP = 60479154;
     protected int TARGET_ALBUM = 181808365;
+    protected int TARGET_USER = 0;
     protected View view;
     protected String FRAGMENT_TAG = "response_view";
     private Fragments type;
@@ -209,7 +210,7 @@ public abstract class BaseAbstractFragment extends Fragment
         return fragment;
     }
 
-    protected void startApiCall(VKRequest request,Fragments type) {
+    public void startApiCall(VKRequest request,Fragments type) {
 
         setMyRequest(request);//
         setType(type);
