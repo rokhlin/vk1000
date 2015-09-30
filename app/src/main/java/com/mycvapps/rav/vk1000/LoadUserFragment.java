@@ -7,8 +7,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.vk.sdk.api.VKError;
 import com.vk.sdk.api.VKRequest;
 import com.vk.sdk.api.VKResponse;
@@ -18,6 +16,12 @@ public class LoadUserFragment extends BaseAbstractFragment {
     private User curUser=null;
     public TextView textView, uid ,name, lastname;
     public ImageView avatar;
+
+
+    void setScrListener() {
+
+    }
+
     @Override
     public void getFragmentViews(View view) {
         try {
@@ -86,10 +90,7 @@ public class LoadUserFragment extends BaseAbstractFragment {
         name.setText(curUser.getFirstName());
         lastname.setText(curUser.getLastName());
 
-        ImageLoader imageLoader = ImageLoader.getInstance(); // Получили экземпляр
-        imageLoader.init(ImageLoaderConfiguration.createDefault(getContext())); // Проинициализировали конфигом по умолчанию
-        imageLoader.displayImage(curUser.getPhoto50(), avatar); // Запустили асинхронный показ картинки
-
+        PicassoCache.getPicassoInstance(getContext()).load(curUser.getPhoto50()).into(avatar);
     }
 
 

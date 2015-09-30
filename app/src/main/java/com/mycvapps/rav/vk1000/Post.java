@@ -76,7 +76,8 @@ public class Post {
             }
 
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.d(TAG, "_______________________parseAttachments(JSONObject object)= error Attachments not found");
+           // e.printStackTrace();//Uncomment for debug
         }
         return jAttachements;
     }
@@ -103,7 +104,8 @@ public class Post {
                 Post post = parseItem((JSONObject) items.get(i));
                 if(post != null) posts.add(post);
             } catch (JSONException e1) {
-                e1.printStackTrace();
+                Log.d(TAG, "_______________________parseItems(JSONArray items)= error, Posts not found");
+                //e1.printStackTrace();//Uncomment for debug
             }
         }
         return posts;
@@ -119,25 +121,27 @@ public class Post {
             JSONArray groupVKs = ((JSONObject) response.json.get("response")).getJSONArray("groups");
             JSONArray profiles = ((JSONObject) response.json.get("response")).getJSONArray("profiles");
 
-
-            Log.d(TAG, "________ getPosts________JSONArray items="+items.toString());
-            Log.d(TAG, "__________________________________________________________________________________________________");
-            Log.d(TAG, "________ getPosts________JSONArray groups="+groupVKs.toString());
-            Log.d(TAG, "__________________________________________________________________________________________________");
-            Log.d(TAG, "________ getPosts________JSONArray profiles="+profiles.toString());
-            Log.d(TAG, "__________________________________________________________________________________________________");
+//            //Uncomment for debug
+//            Log.d(TAG, "________ getPosts________JSONArray items="+items.toString());
+//            Log.d(TAG, "__________________________________________________________________________________________________");
+//            Log.d(TAG, "________ getPosts________JSONArray groups="+groupVKs.toString());
+//            Log.d(TAG, "__________________________________________________________________________________________________");
+//            Log.d(TAG, "________ getPosts________JSONArray profiles="+profiles.toString());
+//            Log.d(TAG, "__________________________________________________________________________________________________");
 
             posts = parseItems(items);
             groups = GroupVK.parseItems(groupVKs);
             users = User.fromJSONArray(profiles);
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.d(TAG, "_______________________getPosts(VKResponse response)= error to parse items or groupVK or profiles");
+           // e.printStackTrace();//Uncomment for debug
         }
         try {
             count = (int) ((JSONObject) response.json.get("response")).get("count");
             Log.d(TAG, "________ getPosts________count=" + count);
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.d(TAG, "_______________________getPosts(VKResponse response)= error to parse count");
+            //e.printStackTrace();//Uncomment for debug
         }
 
 
@@ -230,6 +234,7 @@ public class Post {
     public static int getCount() {
         return count;
     }
+
 
 
 

@@ -8,9 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.TimeZone;
@@ -19,8 +16,8 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<CustomViewHolder> {
     private static String TAG = "MyRecyclerAdapter";
     private List<Post> posts;
     private Context mContext;
-    private int count = 0;
     private MyClickListenner myClickListenner;
+
     public MyRecyclerAdapter(Context context, List<Post> items) {
         this.posts = items;
         this.mContext = context;
@@ -30,9 +27,7 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<CustomViewHolder> {
     public CustomViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         final View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.post_list_item, null);
 
-        view.setTag(count++);
-        Log.d(TAG, "__________________________CustomViewHolder onCreateViewHolder   current=" + (count - 1));
-        Log.d(TAG, "__________________________CustomViewHolder onCreateViewHolder   posts.get(current).getId()=" + posts.get(count-1).getId());
+
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -40,61 +35,53 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<CustomViewHolder> {
                     myClickListenner.onClick((Integer)v.getTag());
             }
         });
-//                view.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        int current = count;
-//                        count ++;
-//
-//                        Log.d(TAG, "__________________________CustomViewHolder onCreateViewHolder   current=" + current);
-//                        Log.d(TAG, "__________________________CustomViewHolder onCreateViewHolder   posts.get(current).getId()=" + posts.get(current).getId());
-//                        VKRequest request = VKApi.wall().get(VKParameters.from(
-//                                VKApiConst.OFFSET, posts.get(current).getId(),
-//                                VKApiConst.COUNT, 1,
-//                                "filter", "all",
-//                                VKApiConst.VERSION, 5.37
-//                        ));
-//                        BaseAbstractFragment baseAbstractFragment = new WallFragment() {
-//                            @Override
-//                            public void getFragmentViews(View view) {
-//                            }
-//
-//                            @Override
-//                            protected void setSaveInstanceState(Bundle outState) {
-//                            }
-//
-//                            @Override
-//                            protected void getSaveInstanceState(Bundle savedInstanceState) {
-//                            }
-//                        };
-//                        baseAbstractFragment.startApiCall(request, Fragments.WallFragment);
-//
-//                    }
-//                });
+
         return new CustomViewHolder(view);
 
     }
 
+
     @Override
     public void onBindViewHolder(final CustomViewHolder customViewHolder, int i) {
+        customViewHolder.author.getRootView().setTag(i);
        Post post = posts.get(i);
         List<Attachment> attachments = post.getAttachments();
-
+        setElementVisibility(false, customViewHolder.att_image,
+                customViewHolder.att_text,
+                customViewHolder.att_title,
+                customViewHolder.author,
+                customViewHolder.avatar,
+                customViewHolder.post_date,
+                customViewHolder.post_text);
         //Download image using picasso library
-        ImageLoader imageLoader = ImageLoader.getInstance();
-        imageLoader.init(ImageLoaderConfiguration.createDefault(mContext));
 
-        imageLoader.displayImage(post.getFrom_avatar(), customViewHolder.avatar); // Запустили асинхронный показ картинки
-        customViewHolder.post_text.setText(post.getText());
-        customViewHolder.author.setText(post.getFrom_name());
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat f = new SimpleDateFormat("dd.MM.yyyy HH:mm");
-        f.setTimeZone(TimeZone.getTimeZone("GMT"));
-        customViewHolder.post_date.setText(f.format(post.getDate() * 1000));
+        if(post.getFrom_avatar()!=null){
+            PicassoCache.getPicassoInstance(mContext).load(post.getFrom_avatar()).into(customViewHolder.avatar);
+            customViewHolder.avatar.setVisibility(View.VISIBLE);
+        }
+        if(post.getText()!=null){
+            customViewHolder.post_text.setText(post.getText());
+            customViewHolder.post_text.setVisibility(View.VISIBLE);
+        }
+        if(post.getFrom_name()!=null){
+            customViewHolder.author.setText(post.getFrom_name());
+            customViewHolder.author.setVisibility(View.VISIBLE);
+        }
+
+        if(post.getDate()>0){
+            @SuppressLint("SimpleDateFormat") SimpleDateFormat f = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+            f.setTimeZone(TimeZone.getTimeZone("GMT"));
+            customViewHolder.post_date.setText(f.format(post.getDate() * 1000));
+            customViewHolder.post_date.setVisibility(View.VISIBLE);
+        }
+
+
+
 
         if(attachments != null){
             Attachment attachment =attachments.get(0);
-            String title = "";
-            String text = "";
+            String title = null;
+            String text = null;
             String image = null;
 
             if(attachment instanceof Video){
@@ -107,10 +94,37 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<CustomViewHolder> {
                 image = ((Photo) attachment).getPhoto_604();
             }
 
-            imageLoader.displayImage(image, customViewHolder.att_image);
-            customViewHolder.att_title.setText(title);
-            customViewHolder.att_text.setText(text);
+            //imageLoader.displayImage(image, customViewHolder.att_image);
 
+            PicassoCache.getPicassoInstance(mContext).load(image).into(customViewHolder.att_image);
+
+
+            if(image!=null){
+                PicassoCache.getPicassoInstance(mContext).load(image).into(customViewHolder.att_image);
+                customViewHolder.att_image.setVisibility(View.VISIBLE);
+            }
+            if(text!=null){
+                customViewHolder.att_title.setText(title);
+                customViewHolder.att_title.setVisibility(View.VISIBLE);
+            }
+
+            if(title!=null){
+                customViewHolder.att_text.setText(text);
+                customViewHolder.att_text.setVisibility(View.VISIBLE);
+            }
+
+        }
+
+    }
+
+    private void setElementVisibility(boolean state, View... views){
+        int visibility;
+
+        if(state) visibility = View.VISIBLE;
+        else visibility = View.GONE;
+
+        for (View v: views) {
+            v.setVisibility(visibility);
         }
 
     }
@@ -120,6 +134,9 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<CustomViewHolder> {
         return (posts != null ? posts.size() : 0);
     }
 
+
+
+
     public void setMyClickListenner(MyClickListenner value)
     {
         myClickListenner = value;
@@ -128,6 +145,19 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<CustomViewHolder> {
     public interface MyClickListenner
     {
         void onClick(int index);
+    }
+
+    public void add(List<Post> posts1){
+        posts.addAll(posts1);
+        notifyItemInserted(posts.size() - 1);
+        Log.d(TAG, "________________________adapter__add(List<Post> newPosts) =" + posts.size());
+    }
+
+    public void refresh(List<Post> posts1){
+        posts = posts1;
+        Log.d(TAG, "________________________adapter__refresh(List<Post> posts) =" + posts.size());
+        notifyDataSetChanged();
+
     }
 
 }

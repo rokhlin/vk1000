@@ -2,19 +2,19 @@ package com.mycvapps.rav.vk1000;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MenuItem;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.vk.sdk.VKSdk;
 import com.vk.sdk.api.VKRequest;
 
 public class MainActivity extends AppCompatActivity {
     private final String TAG = "MainActivity.class";
     private User curUser;
-    private VKRequest myRequest;
-
+    private VKRequest myRequest =null;
+    private BaseAbstractFragment fragment = null;
 
     public VKRequest getMyRequest() {
         return myRequest;
@@ -28,14 +28,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
-        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
-                .build();
-        ImageLoader.getInstance().init(config);
         if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new SelectorFragment(), TAG)
+                    .add(R.id.container, fragmentCreator(Fragments.WallFragment), Fragments.WallFragment.toString())
                     .addToBackStack(null)
                     .commit();
         }
@@ -77,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     protected BaseAbstractFragment fragmentCreator(Fragments type){
-        BaseAbstractFragment fragment = null;
+
 
         switch (type){
             case SelectorFragment:
@@ -112,7 +109,39 @@ public class MainActivity extends AppCompatActivity {
                 .commit();
     }
 
+    private boolean loading = true;
+    int pastVisibleItems, visibleItemCount, totalItemCount;
 
+    public boolean myRecListener(RecyclerView view, final LinearLayoutManager mLayoutManager){
+    view.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            fragment = (WallFragment) getSupportFragmentManager().findFragmentByTag(Fragments.WallFragment.toString());
+            Log.v(TAG, "___________________________________onScrolled !");
+            visibleItemCount = mLayoutManager.getChildCount();
+            totalItemCount = mLayoutManager.getItemCount();
+            pastVisibleItems = mLayoutManager.findFirstVisibleItemPosition();
+            Log.v(TAG, "___________________________________visibleItemCount ="+visibleItemCount);
+            Log.v(TAG, "___________________________________totalItemCount ="+totalItemCount);
+            Log.v(TAG, "___________________________________pastVisibleItems ="+pastVisibleItems);
+            if (loading) {
+                if ( (visibleItemCount + pastVisibleItems) >= totalItemCount) {
+                    loading = false;
+                    Log.v(TAG, "___________________________________Last Item Wow !");
+                    fragment.onLast();
+                    Log.v(TAG, "___________________________________Last Item END !");
+                }
+                else {
+                    loading = true;
+                }
+            }
+
+
+
+        }
+    });
+    return !loading;
+}
 
 
 }

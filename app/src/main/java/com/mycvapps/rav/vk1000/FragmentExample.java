@@ -18,6 +18,11 @@ public class FragmentExample extends BaseAbstractFragment {
     }
 
 
+
+    void setScrListener() {
+
+    }
+
     @Override
     public void getFragmentViews(View view) {
         view.findViewById(R.id.users_get).setOnClickListener(new View.OnClickListener() {

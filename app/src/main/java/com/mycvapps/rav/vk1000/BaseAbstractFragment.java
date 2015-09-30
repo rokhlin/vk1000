@@ -8,6 +8,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,14 +32,25 @@ import java.io.OutputStream;
 
 public abstract class BaseAbstractFragment extends Fragment
 {
-    protected int LOADED_LAYOUT = R.layout.fragment_start;
+    protected int LOADED_LAYOUT = R.layout.fragment_wall;
     protected int TARGET_GROUP = 60479154;
     protected int TARGET_ALBUM = 181808365;
-    protected int TARGET_USER = 0;
+    protected int TARGET_USER = 10479140;
     protected View view;
     protected String FRAGMENT_TAG = "response_view";
     private Fragments type;
+    private int OFFSET = 0;
+    private final int COUNT = 10;
+    private RecyclerView mRecyclerView;
+    LinearLayoutManager mLayoutManager;
 
+    public void setmLayoutManager(LinearLayoutManager mLayoutManager) {
+        this.mLayoutManager = mLayoutManager;
+    }
+
+    public void setmRecyclerView(RecyclerView mRecyclerView) {
+        this.mRecyclerView = mRecyclerView;
+    }
 
     public void setType(Fragments type) {
         this.type = type;
@@ -84,6 +97,11 @@ public abstract class BaseAbstractFragment extends Fragment
         super.onViewCreated(view, savedInstanceState);
         //setView(view);
         getFragmentViews(view);
+        setScrollListener();
+
+    }
+
+    protected void setScrollListener(){
 
     }
 
@@ -105,9 +123,22 @@ public abstract class BaseAbstractFragment extends Fragment
         this.TARGET_GROUP = TARGET_GROUP;
     }
 
+    public int getOFFSET() {
+        return OFFSET;
+    }
+
+    public void setOFFSET(int OFFSET) {
+        this.OFFSET = OFFSET;
+    }
+
+    public int getCOUNT() {
+        return COUNT;
+    }
     public int getTARGET_ALBUM() {
         return TARGET_ALBUM;
     }
+
+
 
     public void setTARGET_ALBUM(int TARGET_ALBUM) {
         this.TARGET_ALBUM = TARGET_ALBUM;
@@ -185,11 +216,41 @@ public abstract class BaseAbstractFragment extends Fragment
         super.onSaveInstanceState(outState);
         setSaveInstanceState(outState);
     }
+    private boolean loading = true;
+    int pastVisibleItems, visibleItemCount, totalItemCount;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         getSaveInstanceState(savedInstanceState);
+
+//        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+//            @Override
+//            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+//
+//                Log.v(FRAGMENT_TAG, "___________________________________onScrolled !");
+//                visibleItemCount = mLayoutManager.getChildCount();
+//                totalItemCount = mLayoutManager.getItemCount();
+//                pastVisibleItems = mLayoutManager.findFirstVisibleItemPosition();
+//                Log.v(FRAGMENT_TAG, "___________________________________visibleItemCount ="+visibleItemCount);
+//                Log.v(FRAGMENT_TAG, "___________________________________totalItemCount ="+totalItemCount);
+//                Log.v(FRAGMENT_TAG, "___________________________________pastVisibleItems ="+pastVisibleItems);
+//                if (loading) {
+//                    if ( (visibleItemCount + pastVisibleItems) >= totalItemCount) {
+//                        loading = false;
+//                        Log.v(FRAGMENT_TAG, "___________________________________Last Item Wow !");
+//                        onLast();
+//                        Log.v(FRAGMENT_TAG, "___________________________________Last Item END !");
+//                    }
+//                    else {
+//                        loading = true;
+//                    }
+//                }
+//
+//
+//
+//            }
+//        });
     }
 
 
@@ -221,4 +282,9 @@ public abstract class BaseAbstractFragment extends Fragment
 
 
     protected abstract void getSaveInstanceState(Bundle savedInstanceState);
+
+
+    public boolean onLast(){
+return false;
+    }
 }

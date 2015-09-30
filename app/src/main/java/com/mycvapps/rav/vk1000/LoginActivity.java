@@ -77,7 +77,8 @@ public class LoginActivity extends FragmentActivity {
         super.onResume();
         isResumed = true;
         if (VKSdk.isLoggedIn()) {
-            showLogout();
+            //showLogout();
+            startMainActivity();
         } else {
             showLogin();
         }
@@ -101,7 +102,7 @@ public class LoginActivity extends FragmentActivity {
             @Override
             public void onResult(VKAccessToken res) {
                 // User passed Authorization
-                startTestActivity();
+                startMainActivity();
             }
 
             @Override
@@ -115,7 +116,8 @@ public class LoginActivity extends FragmentActivity {
         }
     }
 
-    private void startTestActivity() {
+
+    private void startMainActivity() {
         startActivity(new Intent(this, MainActivity.class));
     }
 
@@ -149,7 +151,7 @@ public class LoginActivity extends FragmentActivity {
             v.findViewById(R.id.continue_button).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    ((LoginActivity) getActivity()).startTestActivity();
+                    ((LoginActivity) getActivity()).startMainActivity();
                 }
             });
 
