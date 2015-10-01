@@ -1,10 +1,13 @@
 package com.mycvapps.rav.vk1000;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.vk.sdk.VKSdk;
@@ -37,13 +40,21 @@ public class MainActivity extends AppCompatActivity {
                     .commit();
         }
     }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater=getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        return super.onCreateOptionsMenu(menu);
 
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
 
-        if (itemId == android.R.id.home) {
-            finish();
+        if (itemId == R.id.action_logout) {
+            Intent intent = new Intent(this,LoginActivity.class);
+            intent.putExtra("state", false);
+            startActivity(intent);
             return true;
         }
 
@@ -78,22 +89,22 @@ public class MainActivity extends AppCompatActivity {
 
         switch (type){
             case SelectorFragment:
-                Log.d(TAG, "_________________Load  SelectorFragment");
+                Log.v(TAG, "_________________Load  SelectorFragment");
                 fragment = new SelectorFragment();
                 fragment.setLOADED_LAYOUT(R.layout.fragment_start);
                 break;
             case LoadUserFragment:
-                Log.d(TAG, "_________________Load  LoadUserFragment");
+                Log.v(TAG, "_________________Load  LoadUserFragment");
                 fragment = new LoadUserFragment();
                 fragment.setLOADED_LAYOUT(R.layout.fragment_api_call);
                 break;
             case WallFragment:
-                Log.d(TAG, "_________________Load  WallFragment");
+                Log.v(TAG, "_________________Load  WallFragment");
                 fragment = new WallFragment();
                 fragment.setLOADED_LAYOUT(R.layout.fragment_wall);
                 break;
             case PostFragment:
-                Log.d(TAG, "_________________Load  PostFragment");
+                Log.v(TAG, "_________________Load  PostFragment");
                 fragment = new PostFragment();
                 fragment.setLOADED_LAYOUT(R.layout.fragment_post);
                 break;
@@ -121,9 +132,9 @@ public class MainActivity extends AppCompatActivity {
             visibleItemCount = mLayoutManager.getChildCount();
             totalItemCount = mLayoutManager.getItemCount();
             pastVisibleItems = mLayoutManager.findFirstVisibleItemPosition();
-            Log.v(TAG, "___________________________________visibleItemCount ="+visibleItemCount);
-            Log.v(TAG, "___________________________________totalItemCount ="+totalItemCount);
-            Log.v(TAG, "___________________________________pastVisibleItems ="+pastVisibleItems);
+            Log.i(TAG, "___________________________________visibleItemCount =" + visibleItemCount);
+            Log.i(TAG, "___________________________________totalItemCount ="+totalItemCount);
+            Log.i(TAG, "___________________________________pastVisibleItems ="+pastVisibleItems);
             if (loading) {
                 if ( (visibleItemCount + pastVisibleItems) >= totalItemCount) {
                     loading = false;

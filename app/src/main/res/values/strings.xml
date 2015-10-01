@@ -29,4 +29,6 @@
     <string name="test_share">Test share dialog</string>
     <string name="logout">Выйти</string>
     <string name="title_activity_api_call">ApiCallActivity</string>
+
+    <string name="menu_logout">Выйти</string>
 </resources>

@@ -14,7 +14,7 @@ import com.vk.sdk.VKSdk;
 import com.vk.sdk.api.VKError;
 
 public class LoginActivity extends FragmentActivity {
-
+    private boolean state = true;
     private boolean isResumed = false;
     private static final String[] sMyScope = new String[]{
             VKScope.FRIENDS,
@@ -76,9 +76,17 @@ public class LoginActivity extends FragmentActivity {
     protected void onResume() {
         super.onResume();
         isResumed = true;
+        Intent intent = getIntent();
+        state = intent.getBooleanExtra("state",false);
         if (VKSdk.isLoggedIn()) {
-            //showLogout();
-            startMainActivity();
+            if(state){
+                startMainActivity();
+            }
+            else {
+                state = true;
+                showLogout();
+            }
+
         } else {
             showLogin();
         }
