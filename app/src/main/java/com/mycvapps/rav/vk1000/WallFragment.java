@@ -1,6 +1,5 @@
 package com.mycvapps.rav.vk1000;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,23 +19,22 @@ import com.vk.sdk.api.VKResponse;
 import java.util.List;
 
 public class WallFragment extends BaseAbstractFragment  {
-    private List<Post> postsList;//лист статей
-    private List<Post> newPosts;
-    private RecyclerView mRecyclerView;
-    private MyRecyclerAdapter adapter;
-    private ProgressBar progressBar;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
-    LinearLayoutManager mLayoutManager;
-    boolean atRes = false;
-     AsyncTask at;
     private static String TAG = Fragments.WallFragment.toString();
+    private List<Post> posts;//лист статей
+    private List<Post> newPosts;//обновленный лист статей
+    private RecyclerView mRecyclerView;
+    private MyRecyclerAdapter mAdapter;
+    private ProgressBar mProgressBar;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private LinearLayoutManager mLayoutManager;
+    private EndlessRecyclerOnScrollListener mOnScrollListener;
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
 
         if (itemId == android.R.id.home) {
-            ((MainActivity)getActivity()).finish();
+            getActivity().finish();
             return true;
         }
 
@@ -45,30 +43,34 @@ public class WallFragment extends BaseAbstractFragment  {
     @Override
     public void getFragmentViews(View view) {
         // Initialize recycler view
+        mLayoutManager = new LinearLayoutManager(getContext());
+
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+
+        mOnScrollListener= new EndlessRecyclerOnScrollListener(mLayoutManager) {
+            @Override
+            public void onLoadMore(int current_page) {
+                onLast();
+            }
+        };
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                setOFFSET(0);
-                refreshItems();
-                mSwipeRefreshLayout.setRefreshing(false);
+                refresh();
             }
         });
 
 
-        mLayoutManager = new LinearLayoutManager(getContext());
-        setmLayoutManager(mLayoutManager);
-
-        mRecyclerView.setLayoutManager(mLayoutManager);
-
-        progressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
-        progressBar.setVisibility(View.VISIBLE);
+        setmLayoutManager(mLayoutManager);///&&&&&&&&&&&&
+        mProgressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
+        mProgressBar.setVisibility(View.VISIBLE);
 
         VKRequest request = VKApi.wall().get(VKParameters.from(VKApiConst.OWNER_ID, TARGET_USER,
-                VKApiConst.OFFSET, getOFFSET(),
-                VKApiConst.COUNT, getCOUNT(),
+                VKApiConst.OFFSET, getOffset(),
+                VKApiConst.COUNT, getCount(),
                 "filter", "all",
                 VKApiConst.EXTENDED, 1,
                 VKApiConst.VERSION, 5.37
@@ -76,8 +78,8 @@ public class WallFragment extends BaseAbstractFragment  {
 
         if(TARGET_USER == 0){
             request = VKApi.wall().get(VKParameters.from(//VKApiConst.OWNER_ID, "10479140", //заменить String.valueOf(((MainActivity) getActivity()).getCurUser().getId())
-                    VKApiConst.OFFSET, getOFFSET(),
-                    VKApiConst.COUNT, getCOUNT(),
+                    VKApiConst.OFFSET, getOffset(),
+                    VKApiConst.COUNT, getCount(),
                     "filter", "all",
                     VKApiConst.EXTENDED,1,
                     VKApiConst.VERSION, 5.37
@@ -115,151 +117,45 @@ public class WallFragment extends BaseAbstractFragment  {
         @Override
         public void onComplete(VKResponse response) {
             //парсинг json ответа
-            postsList = Post.getPosts(response);
-            adapter = new MyRecyclerAdapter(getContext(), postsList);
-            adapter.setMyClickListenner(new MyRecyclerAdapter.MyClickListenner() {
+            posts = Post.getPosts(response);
+            mAdapter = new MyRecyclerAdapter(getContext(), posts);
+            mAdapter.setMyClickListenner(new MyRecyclerAdapter.MyClickListenner() {
                 @Override
                 public void onClick(int index) {
                     Log.d(TAG, "__________________________onClick(int index) =" + index);
-                    Log.d(TAG, "__________________________CustomViewHolder onCreateViewHolder   posts.get(current).getId()=" + postsList.get(index).getId());
+                    Log.i(TAG, "__________________________CustomViewHolder onCreateViewHolder   posts.get(current).getId()=" + posts.get(index).getId());
                     VKRequest request;
-                    if(TARGET_USER == 0) {
+                    if (TARGET_USER == 0) {
                         TARGET_USER = 10479140;// ((MainActivity) getActivity()).getCurUser().getId();
 
                     }
-                    Log.d(TAG, "__________________________ID =====" + TARGET_USER+"_"+ postsList.get(index).getId());
-                    request = VKApi.wall().getById(VKParameters.from(VKApiConst.POSTS, TARGET_USER+"_"+ postsList.get(index).getId(),
-                            VKApiConst.EXTENDED,1,
+                    Log.i(TAG, "__________________________ID =====" + TARGET_USER + "_" + posts.get(index).getId());
+                    request = VKApi.wall().getById(VKParameters.from(VKApiConst.POSTS, TARGET_USER + "_" + posts.get(index).getId(),
+                            VKApiConst.EXTENDED, 1,
                             VKApiConst.VERSION, 5.37));
 
-                    startApiCall(request,Fragments.PostFragment);
+                    startApiCall(request, Fragments.PostFragment);
                 }
             });
-            mRecyclerView.setAdapter(adapter);
-            setmRecyclerView(mRecyclerView);
-            progressBar.setVisibility(View.GONE);
+            mRecyclerView.setAdapter(mAdapter);
+            mProgressBar.setVisibility(View.GONE);
         }
     };
 
 
 
 
-
-
-    private class WallLoader extends AsyncTask<Void,Void,Void> {
-        @Override
-        protected void onPreExecute() {
-            Log.d(TAG, "__________________________WallLoader onPreExecute Success" );
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            int check = 0;
-            atRes = false;
-            while (!atRes) {
-                if(check == 0){
-                    check = 1;
-                    getPosts(getOFFSET(), getCOUNT());
-                    Log.d(TAG, "___________________doInBackground_______parsing offset=" + getOFFSET() + " count=" + getCOUNT() + " Success");
-                    Log.d(TAG, "_______________________doInBackground postsList =" + postsList.size());
-                }
-
-                if (atRes){
-                    Log.d(TAG, "__________________________atRes =====" + atRes);
-                    break;
-
-                }
-
-
-
-            }
-            return null;
-        }
-
-
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            adapter.refresh(postsList);
-            //adapter = new MyRecyclerAdapter(getContext(), postsList);
-            Log.d(TAG, "__________!!!!!!!!!!!!!!!!!!!!!!!!!!!________________onPostExecute postsList.size() =" + postsList.size());
-
-//            updateOffset();
-//
-//            progressBar.setVisibility(View.GONE);
-
-        }
-
-
-    }
-
     private void updateOffset() {
-        setOFFSET(getCOUNT() + getOFFSET());
-        Log.d(TAG, "__________________________ OFFSET =" + getOFFSET());
+        setOffset(getCount() + getOffset());
+        Log.i(TAG, "__________________________ OFFSET =" + getOffset());
     }
 
-//    public boolean getPosts(int offset, int count){
-//
-//    VKRequest request = VKApi.wall().get(VKParameters.from(VKApiConst.OWNER_ID, TARGET_USER,
-//            VKApiConst.OFFSET, getOFFSET(),
-//            VKApiConst.COUNT, getCOUNT(),
-//            "filter", "all",
-//            VKApiConst.EXTENDED, 1,
-//            VKApiConst.VERSION, 5.37
-//    ));
-//
-//    if(TARGET_USER == 0){
-//        request = VKApi.wall().get(VKParameters.from(//VKApiConst.OWNER_ID, "10479140", //заменить String.valueOf(((MainActivity) getActivity()).getCurUser().getId())
-//                VKApiConst.OFFSET, getOFFSET(),
-//                VKApiConst.COUNT, getCOUNT(),
-//                "filter", "all",
-//                VKApiConst.EXTENDED,1,
-//                VKApiConst.VERSION, 5.37
-//        ));
-//    }
-//
-//    Log.d(TAG, "__________________________request  =" + request.toString());
-//
-//        setMyRequest(request);
-//
-//
-//
-//
-//        request.executeWithListener(new VKRequest.VKRequestListener() {
-//            @Override
-//            public void onComplete(VKResponse response) {
-//                super.onComplete(response);
-//                //парсинг json ответа
-//                newPosts = Post.getPosts(response);
-//                postsList.addAll(newPosts);
-//                Log.d(TAG, "__________________________ request.executeWithListener  postsList.size()) =" + postsList.size());
-//                updateOffset();
-//                progressBar.setVisibility(View.GONE);
-//                at.cancel(true);
-//                atRes = true;
-//                adapter.notifyItemInserted(postsList.size() - 1);
-//
-//
-//            }
-//
-//            @Override
-//            public void onError(VKError error) {
-//                super.onError(error);
-//                Log.d(TAG, "__________________________ request.executeWithListener  onError(VKError error)  =" + error.toString());
-//                error.toString();
-//            }
-//        });
-//
-//
-//
-//    return true;
-//}
 
-    public VKRequest getPosts(int offset, int count){
+    public VKRequest setRequest(int offset, int count){
 
         VKRequest request = VKApi.wall().get(VKParameters.from(VKApiConst.OWNER_ID, TARGET_USER,
-                VKApiConst.OFFSET, getOFFSET(),
-                VKApiConst.COUNT, getCOUNT(),
+                VKApiConst.OFFSET, offset,
+                VKApiConst.COUNT, count,
                 "filter", "all",
                 VKApiConst.EXTENDED, 1,
                 VKApiConst.VERSION, 5.37
@@ -267,8 +163,8 @@ public class WallFragment extends BaseAbstractFragment  {
 
         if(TARGET_USER == 0){
             request = VKApi.wall().get(VKParameters.from(//VKApiConst.OWNER_ID, "10479140", //заменить String.valueOf(((MainActivity) getActivity()).getCurUser().getId())
-                    VKApiConst.OFFSET, getOFFSET(),
-                    VKApiConst.COUNT, getCOUNT(),
+                    VKApiConst.OFFSET, offset,
+                    VKApiConst.COUNT, count,
                     "filter", "all",
                     VKApiConst.EXTENDED,1,
                     VKApiConst.VERSION, 5.37
@@ -278,14 +174,6 @@ public class WallFragment extends BaseAbstractFragment  {
         Log.d(TAG, "__________________________request  =" + request.toString());
 
         setMyRequest(request);
-
-
-
-
-
-
-
-
         return request;
     }
 
@@ -294,7 +182,7 @@ public class WallFragment extends BaseAbstractFragment  {
     public boolean onLast(){
 
 
-        VKRequest request = getPosts(getOFFSET(), getCOUNT());
+        VKRequest request = setRequest(getOffset(), getCount());
         request.executeWithListener(new VKRequest.VKRequestListener() {
             @Override
             public void onComplete(VKResponse response) {
@@ -302,13 +190,13 @@ public class WallFragment extends BaseAbstractFragment  {
                 //парсинг json ответа
                 newPosts = Post.getPosts(response);
 
-                Log.d(TAG, "__________________________ Last onComplete  newPosts.size()) =" + newPosts.size());
-                adapter.add(newPosts);
+                Log.i(TAG, "__________________________ Last onComplete  newPosts.size()) =" + newPosts.size());
+                mAdapter.add(newPosts);
 
                 updateOffset();
 
 
-                progressBar.setVisibility(View.GONE);
+                mProgressBar.setVisibility(View.GONE);
 
 
             }
@@ -324,9 +212,9 @@ public class WallFragment extends BaseAbstractFragment  {
     }
 
 
-    public boolean refreshItems(){
-        Log.d(TAG, "__________________________ refreshItems");
-        VKRequest request = getPosts(getOFFSET(),getCOUNT());
+    public void refresh(){
+        setOffset(0);
+        VKRequest request = setRequest(getOffset(), getCount());
         request.executeWithListener(new VKRequest.VKRequestListener() {
             @Override
             public void onComplete(VKResponse response) {
@@ -334,19 +222,16 @@ public class WallFragment extends BaseAbstractFragment  {
 
                 //парсинг json ответа
                 newPosts = Post.getPosts(response);
+                posts = newPosts;
+                mAdapter.refresh(posts);
 
-                postsList = newPosts;
-                adapter.refresh(newPosts);
-
-                Log.d(TAG, "__________________________ refreshItems  postsList.size()) =" + postsList.size());
-                progressBar.setVisibility(View.GONE);
-
-
+                Log.i(TAG, "__________________________ refresh  posts.size()) =" + posts.size());
+                mSwipeRefreshLayout.setRefreshing(false);
+                updateOffset();
+                mOnScrollListener.reset(0,true);
             }
-
         });
-        Log.d(TAG, "__________________________ onLast finished");
-        return true;
+
     }
 
     @Override
@@ -363,11 +248,6 @@ public class WallFragment extends BaseAbstractFragment  {
 
     @Override
     protected void setScrollListener() {
-        mRecyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener(mLayoutManager) {
-            @Override
-            public void onLoadMore(int current_page) {
-                onLast();
-            }
-        });
+        mRecyclerView.addOnScrollListener(mOnScrollListener);
     }
 }

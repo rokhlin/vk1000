@@ -44,44 +44,6 @@ public abstract class BaseAbstractFragment extends Fragment
     private RecyclerView mRecyclerView;
     LinearLayoutManager mLayoutManager;
 
-    public void setmLayoutManager(LinearLayoutManager mLayoutManager) {
-        this.mLayoutManager = mLayoutManager;
-    }
-
-    public void setmRecyclerView(RecyclerView mRecyclerView) {
-        this.mRecyclerView = mRecyclerView;
-    }
-
-    public void setType(Fragments type) {
-        this.type = type;
-        setFRAGMENT_TAG(type.toString());
-    }
-
-    public VKRequest  getMyRequest() {
-         return ((MainActivity)getActivity()).getMyRequest();
-    }
-
-    public void setMyRequest(VKRequest request){
-        ((MainActivity)getActivity()).setMyRequest(request);
-    }
-
-    public String getFRAGMENT_TAG() {
-        return FRAGMENT_TAG;
-    }
-
-    public void setFRAGMENT_TAG(String FRAGMENT_TAG) {
-        this.FRAGMENT_TAG = FRAGMENT_TAG;
-    }
-
-    @Nullable
-    @Override
-    public View getView() {
-        return view;
-    }
-
-    public void setView(View view) {
-        this.view = view;
-    }
 
 
     @Override
@@ -95,6 +57,7 @@ public abstract class BaseAbstractFragment extends Fragment
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        setHasOptionsMenu(true);
         //setView(view);
         getFragmentViews(view);
         setScrollListener();
@@ -123,21 +86,59 @@ public abstract class BaseAbstractFragment extends Fragment
         this.TARGET_GROUP = TARGET_GROUP;
     }
 
-    public int getOFFSET() {
+    public int getOffset() {
         return OFFSET;
     }
 
-    public void setOFFSET(int OFFSET) {
+    public void setOffset(int OFFSET) {
         this.OFFSET = OFFSET;
     }
 
-    public int getCOUNT() {
+    public int getCount() {
         return COUNT;
     }
     public int getTARGET_ALBUM() {
         return TARGET_ALBUM;
     }
 
+    public void setmLayoutManager(LinearLayoutManager mLayoutManager) {
+        this.mLayoutManager = mLayoutManager;
+    }
+
+    public void setmRecyclerView(RecyclerView mRecyclerView) {
+        this.mRecyclerView = mRecyclerView;
+    }
+
+    public void setType(Fragments type) {
+        this.type = type;
+        setFRAGMENT_TAG(type.toString());
+    }
+
+    public VKRequest  getMyRequest() {
+        return ((MainActivity)getActivity()).getMyRequest();
+    }
+
+    public void setMyRequest(VKRequest request){
+        ((MainActivity)getActivity()).setMyRequest(request);
+    }
+
+    public String getFRAGMENT_TAG() {
+        return FRAGMENT_TAG;
+    }
+
+    public void setFRAGMENT_TAG(String FRAGMENT_TAG) {
+        this.FRAGMENT_TAG = FRAGMENT_TAG;
+    }
+
+    @Nullable
+    @Override
+    public View getView() {
+        return view;
+    }
+
+    public void setView(View view) {
+        this.view = view;
+    }
 
 
     public void setTARGET_ALBUM(int TARGET_ALBUM) {

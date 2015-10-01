@@ -47,7 +47,7 @@
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceSmall"
 
-                            android:id="@+id/tv_post_date" />
+                            android:id="@+id/tv_postDate" />
                     </LinearLayout>
                 </LinearLayout>
 

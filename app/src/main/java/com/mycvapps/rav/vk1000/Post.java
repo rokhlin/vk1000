@@ -121,6 +121,18 @@ public class Post {
             JSONArray groupVKs = ((JSONObject) response.json.get("response")).getJSONArray("groups");
             JSONArray profiles = ((JSONObject) response.json.get("response")).getJSONArray("profiles");
 
+
+
+            //try {
+//        JSONArray items = (JSONArray) ((JSONObject) ((JSONObject) response.json).get("response")).getJSONArray("items");
+//        JSONObject item = (JSONObject) items.get(0);
+//        JSONArray att = (JSONArray) item.getJSONArray("attachments");
+//        JSONObject xx = (JSONObject) att.get(0);
+//        img = xx.getJSONObject("photo").getString("photo_604");
+//        Log.d("MSCurrentPost", "JSON: " + img);
+//        } catch (JSONException e) {
+//        e.printStackTrace();
+//        }
 //            //Uncomment for debug
 //            Log.d(TAG, "________ getPosts________JSONArray items="+items.toString());
 //            Log.d(TAG, "__________________________________________________________________________________________________");

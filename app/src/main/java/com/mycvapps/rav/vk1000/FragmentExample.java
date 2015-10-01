@@ -37,7 +37,16 @@ public class FragmentExample extends BaseAbstractFragment {
     }
 }
 
-
+//try {
+//        JSONArray items = (JSONArray) ((JSONObject) ((JSONObject) response.json).get("response")).getJSONArray("items");
+//        JSONObject item = (JSONObject) items.get(0);
+//        JSONArray att = (JSONArray) item.getJSONArray("attachments");
+//        JSONObject xx = (JSONObject) att.get(0);
+//        img = xx.getJSONObject("photo").getString("photo_604");
+//        Log.d("MSCurrentPost", "JSON: " + img);
+//        } catch (JSONException e) {
+//        e.printStackTrace();
+//        }
 //                VKRequest request = VKApi.users().get(VKParameters.from(VKApiConst.FIELDS,
 //                        "id,first_name,last_name,sex,bdate,city,country,photo_50,photo_100," +
 //                                "photo_200_orig,photo_200,photo_400_orig,photo_max,photo_max_orig,online," +

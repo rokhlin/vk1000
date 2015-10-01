@@ -11,10 +11,15 @@ public class Photo extends Attachment {
     private int album_id;// -7,
     private int owner_id;// -36459871,
     private int user_id;// 100,
+
+    private String photo_50;// 'http://cs7066.vk....a92/AELn4yje7-o.jpg',
     private String photo_75;// 'http://cs7066.vk....a8f/4RIoajkC1Ys.jpg',
     private String photo_130;// 'http://cs7066.vk....a90/j66FvRXjS8Q.jpg',
     private String photo_604;// 'http://cs7066.vk....a91/8Uxan-a3FGg.jpg',
     private String photo_807;// 'http://cs7066.vk....a92/AELn4yje7-o.jpg',
+    private String photo_1280;// 'http://cs7066.vk....a92/AELn4yje7-o.jpg',
+    private String photo_2650;// 'http://cs7066.vk....a92/AELn4yje7-o.jpg',
+
     private int width;// 450,
     private int height;// 610,
     private String text;// '',

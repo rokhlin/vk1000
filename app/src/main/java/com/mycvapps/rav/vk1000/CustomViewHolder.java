@@ -20,7 +20,7 @@ public class CustomViewHolder extends RecyclerView.ViewHolder  {
         view.setLayoutParams(new CardView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         this.avatar = (ImageView) view.findViewById(R.id.iv_avatar);
         this.post_text = (TextView) view.findViewById(R.id.tv_post_text);
-        this.post_date = (TextView) view.findViewById(R.id.tv_post_date);
+        this.post_date = (TextView) view.findViewById(R.id.tv_postDate);
         this.author = (TextView)view.findViewById(R.id.tv_author);
         //this.linearLayout = (LinearLayout) view.findViewById(R.id.ll_att_container);
 
