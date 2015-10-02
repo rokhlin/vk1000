@@ -1,5 +1,7 @@
 package com.mycvapps.rav.vk1000;
-
+/**
+ * Класс реализует стабильную подгрузку фото в КЭШ
+ */
 
 import android.content.Context;
 

@@ -15,7 +15,7 @@ import com.vk.sdk.api.VKRequest;
 
 public class MainActivity extends AppCompatActivity {
     private final String TAG = "MainActivity.class";
-    private User curUser;
+
     private VKRequest myRequest =null;
     private BaseAbstractFragment fragment = null;
 
@@ -89,13 +89,6 @@ public class MainActivity extends AppCompatActivity {
         else super.onBackPressed();
     }
 
-    public User getCurUser() {
-        return curUser;
-    }
-
-    public void setCurUser(User curUser) {
-        this.curUser = curUser;
-    }
 
 
 

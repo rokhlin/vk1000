@@ -1,5 +1,7 @@
 package com.mycvapps.rav.vk1000;
-
+/**
+ * Активити экран для авторизации
+ */
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;

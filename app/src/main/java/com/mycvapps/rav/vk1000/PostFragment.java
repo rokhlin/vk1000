@@ -68,6 +68,7 @@ public class PostFragment extends BaseAbstractFragment {
 
     @Override
     protected void setSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
 
     }
 

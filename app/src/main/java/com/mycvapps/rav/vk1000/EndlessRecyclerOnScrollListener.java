@@ -1,5 +1,8 @@
 package com.mycvapps.rav.vk1000;
-
+/**
+ * Класс реализует эффект бесконечной прокрутки,
+ * при достижении последних постов, подгружаются новыею
+ */
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 

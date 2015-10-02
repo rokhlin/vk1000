@@ -1,5 +1,8 @@
 package com.mycvapps.rav.vk1000;
-
+/**
+ * Базовый Класс для парсинга Attachment вложений, от него наследуются
+ * все классы которые находятся в Attachment (Photo,video,...)
+ */
 
 public class Attachment {
     private String type;

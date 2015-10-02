@@ -61,5 +61,11 @@ public class RequestManager {
                 VKApiConst.VERSION, 5.37));
     }
 
-
+    public static VKRequest getUser(){
+        return VKApi.users().get(VKParameters.from(VKApiConst.FIELDS, "id,first_name,last_name,photo_50"));
+    }
+    public static VKRequest getUser(int id){
+        return VKApi.users().get(VKParameters.from(VKApiConst.USER_ID,id,
+                VKApiConst.FIELDS, "id,first_name,last_name,photo_50"));
+    }
 }

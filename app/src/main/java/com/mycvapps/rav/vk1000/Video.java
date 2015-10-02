@@ -1,5 +1,7 @@
 package com.mycvapps.rav.vk1000;
-
+/**
+ * Класс для парсинга видео
+ */
 
 import org.json.JSONException;
 import org.json.JSONObject;

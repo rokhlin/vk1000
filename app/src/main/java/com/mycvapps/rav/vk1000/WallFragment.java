@@ -1,6 +1,12 @@
 package com.mycvapps.rav.vk1000;
+/**
+ * Сласс обработчика стены пользователя
+ */
+
 
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,7 +21,9 @@ import com.vk.sdk.api.VKResponse;
 
 import java.util.List;
 
+
 public class WallFragment extends BaseAbstractFragment  {
+    private static String RECYCLER_STATE_TAG = "com.mycvapps.rav.vk1000.recycler.state";
     private static String TAG = Fragments.WallFragment.toString();
     private List<Post> posts;//лист статей
     private List<Post> newPosts;//обновленный лист статей
@@ -40,6 +48,9 @@ public class WallFragment extends BaseAbstractFragment  {
     @Override
     public void getFragmentViews(View view) {
         // Initialize recycler view
+
+
+
         mLayoutManager = new LinearLayoutManager(getContext());
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
@@ -95,6 +106,16 @@ public class WallFragment extends BaseAbstractFragment  {
 
 
 
+    VKRequest.VKRequestListener userRequestListener = new VKRequest.VKRequestListener() {
+        @Override
+        public void onComplete(VKResponse response) {
+            //парсинг json ответа
+        }
+    };
+
+
+
+
     VKRequest.VKRequestListener wallRequestListener = new VKRequest.VKRequestListener() {
         @Override
         public void onComplete(VKResponse response) {
@@ -108,8 +129,7 @@ public class WallFragment extends BaseAbstractFragment  {
                     Log.i(TAG, "__________________________CustomViewHolder onCreateViewHolder   posts.get(current).getId()=" + posts.get(index).getId());
                     VKRequest reqPost;
                     if (TARGET_USER == 0) {
-                        TARGET_USER = 10479140;// ((MainActivity) getActivity()).getCurUser().getId();
-
+                        setCurrentUser();
                     }
                     reqPost = RequestManager.getPost(TARGET_USER, posts.get(index).getId());
                     startApiCall(reqPost, Fragments.PostFragment);
@@ -179,21 +199,36 @@ public class WallFragment extends BaseAbstractFragment  {
                 mAdapter.refresh(posts);
                 mSwipeRefreshLayout.setRefreshing(false);
                 updateOffset();
-                mOnScrollListener.reset(0,true);
+                mOnScrollListener.reset(0, true);
             }
         });
 
     }
 
     @Override
-    protected void setSaveInstanceState(Bundle outState) {
+    public void setSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(RECYCLER_STATE_TAG, mLayoutManager.onSaveInstanceState());
 
     }
 
     @Override
     protected void getSaveInstanceState(Bundle savedInstanceState) {
+        onViewStateRestored(savedInstanceState);
 
     }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+
+        if(savedInstanceState != null)
+        {
+            Parcelable savedRecyclerLayoutState = savedInstanceState.getParcelable(RECYCLER_STATE_TAG);
+            mLayoutManager.onRestoreInstanceState(savedRecyclerLayoutState);
+        }
+    }
+
 
     @Override
     protected void setScrollListener() {

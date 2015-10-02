@@ -1,5 +1,7 @@
 package com.mycvapps.rav.vk1000;
-
+/**
+ * Реализует авторизацию через VK sdk
+ */
 import android.content.Intent;
 import android.widget.Toast;
 

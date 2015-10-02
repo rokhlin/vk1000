@@ -1,5 +1,7 @@
 package com.mycvapps.rav.vk1000;
-
+/**
+ * Класс для парсинга пользователей
+ */
 import android.util.Log;
 
 import com.vk.sdk.api.VKResponse;
@@ -61,7 +63,6 @@ public class User {
             JSONObject object = response.json;
             users = new ArrayList<>();
             users.add(fromJSON(object));
-            Log.d(TAG, "________ getUsers________json"+ object.toString());
         }
         return users;
     }

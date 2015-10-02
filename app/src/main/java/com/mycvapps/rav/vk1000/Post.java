@@ -1,5 +1,7 @@
 package com.mycvapps.rav.vk1000;
-
+/**
+ * Класс для парсинга постов
+ */
 import android.util.Log;
 
 import com.vk.sdk.api.VKResponse;
@@ -137,7 +139,7 @@ public class Post {
         List<GroupVK> groups = null;
         List<User> users = null;
         try {
-            Log.d(TAG, "________ getPosts________response="+response.json.toString());
+            //Log.d(TAG, "________ getPosts________response="+response.json.toString());//Uncomment for debug
             JSONArray items = ((JSONObject) response.json.get("response")).getJSONArray("items");
             JSONArray groupVKs = ((JSONObject) response.json.get("response")).getJSONArray("groups");
             JSONArray profiles = ((JSONObject) response.json.get("response")).getJSONArray("profiles");

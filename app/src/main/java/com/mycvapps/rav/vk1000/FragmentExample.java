@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 
 /**
- * Шаблон для создания экранов для программы
+ * Шаблон для создания экранов для программы  не используется
  */
 public class FragmentExample extends BaseAbstractFragment {
 
@@ -20,7 +20,6 @@ public class FragmentExample extends BaseAbstractFragment {
 
 
     void setScrListener() {
-
     }
 
     @Override

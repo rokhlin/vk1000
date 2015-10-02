@@ -1,13 +1,19 @@
 package com.mycvapps.rav.vk1000;
+/**
+ * Базовый класс для вызова всех Фрагментов, обработчиков
+ */
+
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.vk.sdk.api.VKRequest;
+import com.vk.sdk.api.VKResponse;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -18,8 +24,9 @@ import java.io.OutputStream;
 public abstract class BaseAbstractFragment extends Fragment
 {
     protected int LOADED_LAYOUT = R.layout.fragment_wall;
-    protected int TARGET_USER = 10479140;
+    protected int TARGET_USER;
     protected View view;
+    protected User curUser;
     protected String FRAGMENT_TAG = "response_view";
     private int OFFSET = 0;
     private final int COUNT = 10;
@@ -29,38 +36,19 @@ public abstract class BaseAbstractFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
-
         return inflater.inflate(LOADED_LAYOUT, container, false);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         setHasOptionsMenu(true);
-        //setView(view);
+        setCurrentUser();
         getFragmentViews(view);
         setScrollListener();
 
     }
-
-
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        int itemId = item.getItemId();
-//        switch (itemId){
-//            case android.R.id.home :
-//                getTag();
-//                if(getTag().equals(Fragments.PostFragment.toString())){
-//                    getFragmentManager().popBackStack();
-//                    return true;
-//                }
-//                else {
-//                  super.onOptionsItemSelected(item);
-//                    break;
-//                }
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
 
 
     protected void setScrollListener(){
@@ -146,7 +134,18 @@ public abstract class BaseAbstractFragment extends Fragment
         ((MainActivity)getActivity()).loadFragment(type);
     }
 
+    protected void setCurrentUser(){
+        VKRequest reqUser = RequestManager.getUser();
+        reqUser.executeWithListener(new VKRequest.VKRequestListener() {
+            @Override
+            public void onComplete(VKResponse response) {
+                curUser = User.getUser(response);
+                TARGET_USER = curUser.getId();
+                Log.d(FRAGMENT_TAG, "_________________TARGET_USER = " + TARGET_USER);
+            }
+        });
 
+    }
 
     protected abstract void setSaveInstanceState(Bundle outState);
 
