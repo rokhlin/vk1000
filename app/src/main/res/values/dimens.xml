@@ -5,4 +5,5 @@
     <dimen name="activity_logout_margin">24dp</dimen>
     <dimen name="padding_left">32dp</dimen>
     <dimen name="padding_right">32dp</dimen>
+    <dimen name="avatar_width">65dp</dimen>
 </resources>

@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
             case LoadUserFragment:
                 Log.v(TAG, "_________________Load  LoadUserFragment");
                 fragment = new LoadUserFragment();
-                fragment.setLOADED_LAYOUT(R.layout.fragment_api_call);
+                fragment.setLOADED_LAYOUT(R.layout.fragment_user);
                 break;
             case WallFragment:
                 Log.v(TAG, "_________________Load  WallFragment");

@@ -1,6 +1,8 @@
 package com.mycvapps.rav.vk1000;
 
-
+/**
+ * Используется для формирования VKrequest'ов
+ */
 import android.util.Log;
 
 import com.vk.sdk.api.VKApi;

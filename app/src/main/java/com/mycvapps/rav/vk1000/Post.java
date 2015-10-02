@@ -100,7 +100,7 @@ public class Post {
 
         } catch (JSONException e) {
             Log.d(TAG, "_______________________parseAttachments(JSONObject object)= error Attachments not found");
-           e.printStackTrace();//Uncomment for debug
+          // e.printStackTrace();//Uncomment for debug
         }
         return jAttachements;
     }
@@ -187,15 +187,6 @@ public class Post {
 
         return posts;
     }
-
-//      private static Post createPost(VKApiPost apiPost) {
-//          return new Post(apiPost.id,
-//                              apiPost.reply_owner_id,
-//                              apiPost.from_id,
-//                              apiPost.date,
-//                              apiPost.text
-//                              );
-//    }
 
     public List<Attachment> getAttachments() {
         return attachments;

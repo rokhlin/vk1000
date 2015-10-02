@@ -4,7 +4,8 @@ import android.os.Bundle;
 import android.view.View;
 
 /**
- * Шаблон для создания экранов для программы  не используется
+ * Шаблон для создания экранов для программы
+ * !!!!Не используется
  */
 public class FragmentExample extends BaseAbstractFragment {
 
