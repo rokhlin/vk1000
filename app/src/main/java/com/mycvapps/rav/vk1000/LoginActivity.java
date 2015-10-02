@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -58,6 +60,15 @@ public class LoginActivity extends FragmentActivity {
 //        Log.d("Fingerprint", fingerprint[0]);
     }
 
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater=getMenuInflater();
+        inflater.inflate(R.menu.menu_auth, menu);
+        return super.onCreateOptionsMenu(menu);
+
+    }
+
     private void showLogout() {
         getSupportFragmentManager()
                 .beginTransaction()
@@ -72,12 +83,15 @@ public class LoginActivity extends FragmentActivity {
                 .commit();
     }
 
+
+
+
     @Override
     protected void onResume() {
         super.onResume();
         isResumed = true;
         Intent intent = getIntent();
-        state = intent.getBooleanExtra("state",false);
+        state = intent.getBooleanExtra("state",true);
         if (VKSdk.isLoggedIn()) {
             if(state){
                 startMainActivity();
@@ -141,6 +155,15 @@ public class LoginActivity extends FragmentActivity {
                 @Override
                 public void onClick(View view) {
                     VKSdk.login(getActivity(), sMyScope);
+                }
+            });
+            v.findViewById(R.id.exit).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(Intent.ACTION_MAIN);
+                    intent.addCategory(Intent.CATEGORY_HOME);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
                 }
             });
             return v;

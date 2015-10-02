@@ -4,6 +4,7 @@ package com.mycvapps.rav.vk1000;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -16,26 +17,52 @@ import java.util.List;
 import java.util.TimeZone;
 
 public class PostFragment extends BaseAbstractFragment {
-    private TextView author,att_title,post_text,post_date,att_text;
-    private ImageView avatar,att_image;
+    private TextView author,att_title,post_text,post_date,att_text,comments,likes;
+    private ImageView avatar,att_image,comment,like;
     private Context mContext=getContext();
 
 
     void setScrListener() {
-
     }
+
+
 
     @Override
     public void getFragmentViews(View view) {
+
         this.avatar = (ImageView) view.findViewById(R.id.iv_avatar);
         this.post_text = (TextView) view.findViewById(R.id.tv_post_text);
         this.post_date = (TextView) view.findViewById(R.id.tv_postDate);
         this.author = (TextView)view.findViewById(R.id.tv_author);
-        //this.linearLayout = (LinearLayout) view.findViewById(R.id.ll_att_container);
 
         this.att_text = (TextView) view.findViewById(R.id.tv_att_text);
         this.att_title = (TextView) view.findViewById(R.id.tv_att_title);
         this.att_image = (ImageView) view.findViewById(R.id.iv_att_photo);
+        this.comments = (TextView) view.findViewById(R.id.tv_post_comments);
+        this.likes = (TextView) view.findViewById(R.id.tv_post_likes);
+        this.comment = (ImageView) view.findViewById(R.id.iv_post_comment);
+        this.like = (ImageView) view.findViewById(R.id.iv_post_like);
+        like.setTag("unchecked");
+        this.like.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                switch (v.getTag().toString()){
+                    case "unchecked":
+                        like.setImageResource(R.drawable.heart_red);
+                        like.setTag("checked");
+                        likes.setText((Integer.parseInt(likes.getText().toString()) + 1) + "");
+                        break;
+                    case "checked":
+                        like.setImageResource(R.drawable.heart_grey);
+                        like.setTag("unchecked");
+                        likes.setText((Integer.parseInt(likes.getText().toString())-1)+"");
+                        break;
+                }
+            }
+        });
+
+
         processRequestIfRequired();
     }
 
@@ -62,43 +89,8 @@ public class PostFragment extends BaseAbstractFragment {
             //парсинг json ответа
             Post post = Post.getPosts(response).get(0);
             List<Attachment> attachments = post.getAttachments();
-
-//
-//            ImageLoader imageLoader = ImageLoader.getInstance(); // Получили экземпляр
-//            imageLoader.init(ImageLoaderConfiguration.createDefault(getContext())); // Проинициализировали конфигом по умолчанию
-//            imageLoader.displayImage(post.getFrom_avatar(), avatar); // Запустили асинхронный показ картинки
-//            PicassoCache.getPicassoInstance(getContext()).load(curUser.getPhoto50()).into(avatar);
-//            author.setText(post.getFrom_name());
-//            text.setText(post.getText());
-//            if(post.getAttachments() != null){
-//                Attachment attachment =post.getAttachments().get(0);
-//                String title = "";
-//                String text = "";
-//                String image = null;
-//
-//                if(attachment instanceof Video){
-//                    title = ((Video) attachment).getTitle();
-//                    text = ((Video) attachment).getDescription();
-//                    image = ((Video) attachment).getPhoto_320();
-//                }
-//                else if(attachment instanceof Photo){
-//                    text = ((Photo) attachment).getText();
-//                    image = ((Photo) attachment).getPhoto_130();
-//                }
-//
-//                imageLoader.displayImage(image, att_image);
-//                att_title.setText(title);
-//                att_text.setText(text);
-//                @SuppressLint("SimpleDateFormat") SimpleDateFormat f = new SimpleDateFormat("dd.MM.yyyy HH:mm");
-//                f.setTimeZone(TimeZone.getTimeZone("GMT"));
-//                date.setText(f.format(post.getDate()*1000));
-            setElementVisibility(false, att_image,
-                    att_text,
-                    att_title,
-                    author,
-                    avatar,
-                    post_date,
-                    post_text);
+            setElementVisibility(false, att_image, att_text, att_title,
+                                        author, avatar, post_date, post_text,comments,likes);
             //Download image using picasso library
 
             if(post.getFrom_avatar()!=null){
@@ -120,8 +112,24 @@ public class PostFragment extends BaseAbstractFragment {
                 post_date.setText(f.format(post.getDate() * 1000));
                 post_date.setVisibility(View.VISIBLE);
             }
+            Log.d("TAG","_____________________post.getLikes() = "+post.getLikes() );
+            Log.d("TAG","_____________________post.getUser_likes() = "+post.getUser_likes() );
+            Log.d("TAG","_____________________post.getComments() = "+post.getComments() );
 
+            if(post.getComments()> 0){
+                comments.setText(post.getComments()+"");
+                comments.setVisibility(View.VISIBLE);
+            }
 
+            if(post.getLikes()>0){
+                likes.setText(post.getLikes()+"");
+                likes.setVisibility(View.VISIBLE);
+            }
+
+            if(post.getUser_likes()>0){
+                like.setTag("checked");
+                like.setImageResource(R.drawable.heart_red);
+            }
 
 
             if(attachments != null){
@@ -142,6 +150,7 @@ public class PostFragment extends BaseAbstractFragment {
 
                 //imageLoader.displayImage(image, customViewHolder.att_image);
 
+
                 PicassoCache.getPicassoInstance(mContext).load(image).into(att_image);
 
 
@@ -149,6 +158,7 @@ public class PostFragment extends BaseAbstractFragment {
                     PicassoCache.getPicassoInstance(mContext).load(image).into(att_image);
                     att_image.setVisibility(View.VISIBLE);
                 }
+
                 if(text!=null){
                     att_title.setText(title);
                     att_title.setVisibility(View.VISIBLE);
@@ -158,7 +168,6 @@ public class PostFragment extends BaseAbstractFragment {
                     att_text.setText(text);
                     att_text.setVisibility(View.VISIBLE);
                 }
-
             }
 
         }

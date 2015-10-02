@@ -36,8 +36,8 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, fragmentCreator(Fragments.WallFragment), Fragments.WallFragment.toString())
-                    .addToBackStack(null)
                     .commit();
+
         }
     }
     @Override
@@ -50,15 +50,23 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
-
-        if (itemId == R.id.action_logout) {
-            Intent intent = new Intent(this,LoginActivity.class);
-            intent.putExtra("state", false);
-            startActivity(intent);
-            return true;
+        switch (itemId){
+            case R.id.action_logout:
+                loginActivityStart();
+                return true;
+            case android.R.id.home :
+                finish();
+                return true;
         }
 
+
         return super.onOptionsItemSelected(item);
+    }
+
+    private void loginActivityStart() {
+        Intent intent = new Intent(this,LoginActivity.class);
+        intent.putExtra("state", false);
+        startActivity(intent);
     }
 
     @Override
@@ -73,6 +81,13 @@ public class MainActivity extends AppCompatActivity {
         Log.d(VKSdk.SDK_TAG, "On destroy");
     }
 
+    @Override
+    public void onBackPressed() {
+        int count = getSupportFragmentManager().getBackStackEntryCount();
+
+        if (count == 0) loginActivityStart();
+        else super.onBackPressed();
+    }
 
     public User getCurUser() {
         return curUser;
@@ -114,6 +129,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void loadFragment(Fragments type) {
+        Log.i(TAG, "___________________________________BackStackEntryCount =" + getSupportFragmentManager().getBackStackEntryCount());
+
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container, fragmentCreator(type), type.toString())
                 .addToBackStack(type.toString())
@@ -128,19 +145,16 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
             fragment = (WallFragment) getSupportFragmentManager().findFragmentByTag(Fragments.WallFragment.toString());
-            Log.v(TAG, "___________________________________onScrolled !");
             visibleItemCount = mLayoutManager.getChildCount();
             totalItemCount = mLayoutManager.getItemCount();
             pastVisibleItems = mLayoutManager.findFirstVisibleItemPosition();
-            Log.i(TAG, "___________________________________visibleItemCount =" + visibleItemCount);
-            Log.i(TAG, "___________________________________totalItemCount ="+totalItemCount);
-            Log.i(TAG, "___________________________________pastVisibleItems ="+pastVisibleItems);
+            Log.i(TAG, "________________________visibleItemCount =" + visibleItemCount
+                                                        +" totalItemCount ="+totalItemCount
+                                                        +" pastVisibleItems ="+pastVisibleItems);
             if (loading) {
                 if ( (visibleItemCount + pastVisibleItems) >= totalItemCount) {
                     loading = false;
-                    Log.v(TAG, "___________________________________Last Item Wow !");
                     fragment.onLast();
-                    Log.v(TAG, "___________________________________Last Item END !");
                 }
                 else {
                     loading = true;

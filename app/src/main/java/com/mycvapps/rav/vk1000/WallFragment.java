@@ -9,10 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
-import com.vk.sdk.api.VKApi;
-import com.vk.sdk.api.VKApiConst;
 import com.vk.sdk.api.VKError;
-import com.vk.sdk.api.VKParameters;
 import com.vk.sdk.api.VKRequest;
 import com.vk.sdk.api.VKResponse;
 
@@ -63,29 +60,14 @@ public class WallFragment extends BaseAbstractFragment  {
             }
         });
 
-
-        setmLayoutManager(mLayoutManager);///&&&&&&&&&&&&
         mProgressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
         mProgressBar.setVisibility(View.VISIBLE);
 
-        VKRequest request = VKApi.wall().get(VKParameters.from(VKApiConst.OWNER_ID, TARGET_USER,
-                VKApiConst.OFFSET, getOffset(),
-                VKApiConst.COUNT, getCount(),
-                "filter", "all",
-                VKApiConst.EXTENDED, 1,
-                VKApiConst.VERSION, 5.37
-        ));
+        VKRequest wall;
+        if(TARGET_USER == 0) wall = RequestManager.getWall(getOffset(), getCount());
+        else wall = RequestManager.getWall(getOffset(), getCount(), TARGET_USER);
 
-        if(TARGET_USER == 0){
-            request = VKApi.wall().get(VKParameters.from(//VKApiConst.OWNER_ID, "10479140", //заменить String.valueOf(((MainActivity) getActivity()).getCurUser().getId())
-                    VKApiConst.OFFSET, getOffset(),
-                    VKApiConst.COUNT, getCount(),
-                    "filter", "all",
-                    VKApiConst.EXTENDED,1,
-                    VKApiConst.VERSION, 5.37
-            ));
-        }
-        processRequestIfRequired(request);
+        processRequestIfRequired(wall);
 
     }
 
@@ -124,17 +106,13 @@ public class WallFragment extends BaseAbstractFragment  {
                 public void onClick(int index) {
                     Log.d(TAG, "__________________________onClick(int index) =" + index);
                     Log.i(TAG, "__________________________CustomViewHolder onCreateViewHolder   posts.get(current).getId()=" + posts.get(index).getId());
-                    VKRequest request;
+                    VKRequest reqPost;
                     if (TARGET_USER == 0) {
                         TARGET_USER = 10479140;// ((MainActivity) getActivity()).getCurUser().getId();
 
                     }
-                    Log.i(TAG, "__________________________ID =====" + TARGET_USER + "_" + posts.get(index).getId());
-                    request = VKApi.wall().getById(VKParameters.from(VKApiConst.POSTS, TARGET_USER + "_" + posts.get(index).getId(),
-                            VKApiConst.EXTENDED, 1,
-                            VKApiConst.VERSION, 5.37));
-
-                    startApiCall(request, Fragments.PostFragment);
+                    reqPost = RequestManager.getPost(TARGET_USER, posts.get(index).getId());
+                    startApiCall(reqPost, Fragments.PostFragment);
                 }
             });
             mRecyclerView.setAdapter(mAdapter);
@@ -147,42 +125,17 @@ public class WallFragment extends BaseAbstractFragment  {
 
     private void updateOffset() {
         setOffset(getCount() + getOffset());
-        Log.i(TAG, "__________________________ OFFSET =" + getOffset());
+        Log.i(TAG, "__________________________Updated offset =" + getOffset());
     }
 
-
-    public VKRequest setRequest(int offset, int count){
-
-        VKRequest request = VKApi.wall().get(VKParameters.from(VKApiConst.OWNER_ID, TARGET_USER,
-                VKApiConst.OFFSET, offset,
-                VKApiConst.COUNT, count,
-                "filter", "all",
-                VKApiConst.EXTENDED, 1,
-                VKApiConst.VERSION, 5.37
-        ));
-
-        if(TARGET_USER == 0){
-            request = VKApi.wall().get(VKParameters.from(//VKApiConst.OWNER_ID, "10479140", //заменить String.valueOf(((MainActivity) getActivity()).getCurUser().getId())
-                    VKApiConst.OFFSET, offset,
-                    VKApiConst.COUNT, count,
-                    "filter", "all",
-                    VKApiConst.EXTENDED,1,
-                    VKApiConst.VERSION, 5.37
-            ));
-        }
-
-        Log.d(TAG, "__________________________request  =" + request.toString());
-
-        setMyRequest(request);
-        return request;
-    }
 
 
     @Override
     public boolean onLast(){
 
 
-        VKRequest request = setRequest(getOffset(), getCount());
+        VKRequest request = RequestManager.getWall(getOffset(),getCount());
+        setMyRequest(request);
         request.executeWithListener(new VKRequest.VKRequestListener() {
             @Override
             public void onComplete(VKResponse response) {
@@ -214,18 +167,16 @@ public class WallFragment extends BaseAbstractFragment  {
 
     public void refresh(){
         setOffset(0);
-        VKRequest request = setRequest(getOffset(), getCount());
+        VKRequest request = RequestManager.getWall(getOffset(), getCount());
+        setMyRequest(request);
         request.executeWithListener(new VKRequest.VKRequestListener() {
             @Override
             public void onComplete(VKResponse response) {
                 super.onComplete(response);
-
                 //парсинг json ответа
-                newPosts = Post.getPosts(response);
-                posts = newPosts;
-                mAdapter.refresh(posts);
-
+                posts = Post.getPosts(response);
                 Log.i(TAG, "__________________________ refresh  posts.size()) =" + posts.size());
+                mAdapter.refresh(posts);
                 mSwipeRefreshLayout.setRefreshing(false);
                 updateOffset();
                 mOnScrollListener.reset(0,true);
@@ -243,8 +194,6 @@ public class WallFragment extends BaseAbstractFragment  {
     protected void getSaveInstanceState(Bundle savedInstanceState) {
 
     }
-
-
 
     @Override
     protected void setScrollListener() {

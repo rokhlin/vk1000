@@ -1,17 +1,44 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".LoginActivity"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical">
-    <Button
-        android:id="@+id/sign_in_button"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="@string/action_sign_in_short"
-        android:paddingLeft="32dp"
-        android:paddingRight="32dp"
-        android:layout_gravity="right" />
-</LinearLayout>
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+tools:context=".LoginActivity"
+android:layout_width="fill_parent"
+android:layout_height="fill_parent"
+android:orientation="vertical"
+android:background="@color/vk_white">
+
+<Button
+    android:id="@+id/exit"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/continue_using_app"
+    android:paddingLeft="@dimen/padding_left"
+    android:paddingRight="@dimen/padding_right"
+    android:layout_margin="@dimen/activity_logout_margin"
+    android:layout_alignParentBottom="true"
+    android:layout_alignLeft="@+id/imageView2"
+    android:layout_alignStart="@+id/imageView2" />
+
+<Button
+    android:id="@+id/sign_in_button"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/menu_login"
+    android:layout_margin="@dimen/activity_logout_margin"
+    android:paddingLeft="@dimen/padding_left"
+    android:paddingRight="@dimen/padding_right"
+    android:layout_alignParentBottom="true"
+    android:layout_alignParentRight="true"
+    android:layout_alignParentEnd="true" />
+
+<ImageView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/activity_logout_margin"
+    android:id="@+id/imageView2"
+    android:src="@drawable/vk"
+    android:layout_alignParentTop="true"
+    android:layout_centerHorizontal="true"
+    android:contentDescription="@string/vk_desk"/>
+</RelativeLayout>

@@ -3,7 +3,6 @@ package com.mycvapps.rav.vk1000;
 import android.util.Log;
 
 import com.vk.sdk.api.VKResponse;
-import com.vk.sdk.api.model.VKApiPost;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,49 +18,71 @@ public class Post {
     private int from_id;
     private long date;
     private String text;
-    public static int count;
+    public static int sCount;
     private String from_name;
     private String from_avatar;
     private List<Attachment> attachments;
+    private int comments;
+    private int likes;
+    private int user_likes;
 
 
-
-
-    public Post(int id, int owner_id, int from_id, long date, String text) {
+    public Post(int id, int owner_id, int from_id, long date, String text, int comments, int likes, int user_likes) {
         this.id = id;
         this.owner_id = owner_id;
         this.from_id = from_id;
         this.date = date;
         this.text = text;
+        this.comments = comments;
+        this.likes = likes;
+        this.user_likes = user_likes;
 
     }
 
-    public Post(int id, int owner_id, int from_id, long date, String text,List<Attachment> attachments) {
+    public Post(int id, int owner_id, int from_id, long date, String text, int comments, int likes, int user_likes,List<Attachment> attachments) {
         this.id = id;
         this.owner_id = owner_id;
         this.from_id = from_id;
         this.date = date;
         this.text = text;
+        this.comments = comments;
+        this.likes = likes;
+        this.user_likes = user_likes;
         this.attachments = attachments;
     }
 
-    private static Post parseItem(JSONObject object) {
-        final int id = object.optInt("id");
-        final int owner = object.optInt("owner_id");
-        final int from = object.optInt("from_id");
-        final long date = object.optLong("date");
-        final String text = object.optString("text");
+    private static Post parseItem(JSONObject object) throws JSONException {
+        int id = object.optInt("id");
+        int owner = object.optInt("owner_id");
+        int from = object.optInt("from_id");
+        long date = object.optLong("date");
+        String text = object.optString("text");
+        int comments;
+        int likes;
+        int user_likes;
+        try {
+            comments = object.getJSONObject("comments").getInt("count");
+            likes = object.getJSONObject("likes").getInt("count");
+            user_likes = object.getJSONObject("likes").getInt("user_likes");
+        }
+        catch (JSONException e){
+            e.printStackTrace();
+            comments = 0;
+            likes = 0;
+            user_likes =0;
+        }
+
         List<Attachment> att =  parseAttachments(object);
         if(att.size()>0){
             if(att.get(0) != null){
-                return new Post(id,owner,from,date,text, att);
+                return new Post(id,owner,from,date,text,comments,likes,user_likes, att);
             }
             else {
-                return new Post(id,owner,from,date,text);
+                return new Post(id,owner,from,date,text, comments, likes, user_likes);
             }
         }
         else {
-            return new Post(id,owner,from,date,text);
+            return new Post(id,owner,from,date,text, comments,likes,user_likes);
         }
     }
 
@@ -77,7 +98,7 @@ public class Post {
 
         } catch (JSONException e) {
             Log.d(TAG, "_______________________parseAttachments(JSONObject object)= error Attachments not found");
-           // e.printStackTrace();//Uncomment for debug
+           e.printStackTrace();//Uncomment for debug
         }
         return jAttachements;
     }
@@ -122,25 +143,6 @@ public class Post {
             JSONArray profiles = ((JSONObject) response.json.get("response")).getJSONArray("profiles");
 
 
-
-            //try {
-//        JSONArray items = (JSONArray) ((JSONObject) ((JSONObject) response.json).get("response")).getJSONArray("items");
-//        JSONObject item = (JSONObject) items.get(0);
-//        JSONArray att = (JSONArray) item.getJSONArray("attachments");
-//        JSONObject xx = (JSONObject) att.get(0);
-//        img = xx.getJSONObject("photo").getString("photo_604");
-//        Log.d("MSCurrentPost", "JSON: " + img);
-//        } catch (JSONException e) {
-//        e.printStackTrace();
-//        }
-//            //Uncomment for debug
-//            Log.d(TAG, "________ getPosts________JSONArray items="+items.toString());
-//            Log.d(TAG, "__________________________________________________________________________________________________");
-//            Log.d(TAG, "________ getPosts________JSONArray groups="+groupVKs.toString());
-//            Log.d(TAG, "__________________________________________________________________________________________________");
-//            Log.d(TAG, "________ getPosts________JSONArray profiles="+profiles.toString());
-//            Log.d(TAG, "__________________________________________________________________________________________________");
-
             posts = parseItems(items);
             groups = GroupVK.parseItems(groupVKs);
             users = User.fromJSONArray(profiles);
@@ -149,10 +151,10 @@ public class Post {
            // e.printStackTrace();//Uncomment for debug
         }
         try {
-            count = (int) ((JSONObject) response.json.get("response")).get("count");
-            Log.d(TAG, "________ getPosts________count=" + count);
+            sCount = (int) ((JSONObject) response.json.get("response")).get("sCount");
+            Log.d(TAG, "________ getPosts________count=" + sCount);
         } catch (JSONException e) {
-            Log.d(TAG, "_______________________getPosts(VKResponse response)= error to parse count");
+            Log.d(TAG, "_______________________getPosts(VKResponse response)= error to parse sCount");
             //e.printStackTrace();//Uncomment for debug
         }
 
@@ -184,14 +186,14 @@ public class Post {
         return posts;
     }
 
-      private static Post createPost(VKApiPost apiPost) {
-          return new Post(apiPost.id,
-                              apiPost.reply_owner_id,
-                              apiPost.from_id,
-                              apiPost.date,
-                              apiPost.text
-                              );
-    }
+//      private static Post createPost(VKApiPost apiPost) {
+//          return new Post(apiPost.id,
+//                              apiPost.reply_owner_id,
+//                              apiPost.from_id,
+//                              apiPost.date,
+//                              apiPost.text
+//                              );
+//    }
 
     public List<Attachment> getAttachments() {
         return attachments;
@@ -243,12 +245,20 @@ public class Post {
         this.text = text;
     }
 
-    public static int getCount() {
-        return count;
+    public static int getsCount() {
+        return sCount;
     }
 
+    public int getComments() {
+        return comments;
+    }
 
+    public int getLikes() {
+        return likes;
+    }
 
-
+    public int getUser_likes() {
+        return user_likes;
+    }
 }
 
