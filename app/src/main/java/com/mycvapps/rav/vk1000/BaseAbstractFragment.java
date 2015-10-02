@@ -51,6 +51,7 @@ public abstract class BaseAbstractFragment extends Fragment
     }
 
 
+
     protected void setScrollListener(){
     }
 
@@ -156,4 +157,7 @@ public abstract class BaseAbstractFragment extends Fragment
     public boolean onLast(){
 return false;
     }
+
+
+
 }

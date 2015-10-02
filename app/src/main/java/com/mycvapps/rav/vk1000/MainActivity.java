@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
                 loginActivityStart();
                 return true;
             case android.R.id.home :
-                finish();
+                onBackPressed();
                 return true;
         }
 
@@ -63,9 +63,9 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void loginActivityStart() {
+    public void loginActivityStart() {
         Intent intent = new Intent(this,LoginActivity.class);
-        intent.putExtra("state", false);
+        intent.putExtra("exState", false);
         startActivity(intent);
     }
 
@@ -81,13 +81,6 @@ public class MainActivity extends AppCompatActivity {
         Log.d(VKSdk.SDK_TAG, "On destroy");
     }
 
-    @Override
-    public void onBackPressed() {
-        int count = getSupportFragmentManager().getBackStackEntryCount();
-
-        if (count == 0) loginActivityStart();
-        else super.onBackPressed();
-    }
 
 
 
@@ -160,6 +153,4 @@ public class MainActivity extends AppCompatActivity {
     });
     return !loading;
 }
-
-
 }

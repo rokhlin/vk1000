@@ -149,14 +149,14 @@ public class Post {
             groups = GroupVK.parseItems(groupVKs);
             users = User.fromJSONArray(profiles);
         } catch (JSONException e) {
-            Log.d(TAG, "_______________________getPosts(VKResponse response)= error to parse items or groupVK or profiles");
+            Log.e(TAG, "_______________________getPosts(VKResponse response)= error to parse items or groupVK or profiles");
            // e.printStackTrace();//Uncomment for debug
         }
         try {
-            sCount = (int) ((JSONObject) response.json.get("response")).get("sCount");
+            sCount = (int) ((JSONObject) response.json.get("response")).get("count");
             Log.d(TAG, "________ getPosts________count=" + sCount);
         } catch (JSONException e) {
-            Log.d(TAG, "_______________________getPosts(VKResponse response)= error to parse sCount");
+            Log.e(TAG, "_______________________getPosts(VKResponse response)= error to parse sCount");
             //e.printStackTrace();//Uncomment for debug
         }
 

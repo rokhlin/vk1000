@@ -44,10 +44,10 @@ public class LoginActivity extends FragmentActivity {
                         case LoggedIn:
                             showLogout();
                             break;
-//                        case Pending:
-//                            break;
-//                        case Unknown:
-//                            break;
+                        case Pending:
+                            break;
+                        case Unknown:
+                            break;
                     }
                 }
             }
@@ -58,8 +58,6 @@ public class LoginActivity extends FragmentActivity {
             }
         });
 
-//        String[] fingerprint = VKUtil.getCertificateFingerprint(this, this.getPackageName());
-//        Log.d("Fingerprint", fingerprint[0]);
     }
 
 
@@ -93,7 +91,7 @@ public class LoginActivity extends FragmentActivity {
         super.onResume();
         isResumed = true;
         Intent intent = getIntent();
-        state = intent.getBooleanExtra("state",true);
+        state = intent.getBooleanExtra("exState",true);
         if (VKSdk.isLoggedIn()) {
             if(state){
                 startMainActivity();

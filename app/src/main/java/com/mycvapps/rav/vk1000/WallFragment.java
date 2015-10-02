@@ -5,8 +5,6 @@ package com.mycvapps.rav.vk1000;
 
 
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -39,7 +37,7 @@ public class WallFragment extends BaseAbstractFragment  {
         int itemId = item.getItemId();
 
         if (itemId == android.R.id.home) {
-            getActivity().finish();
+            ((MainActivity)getActivity()).loginActivityStart();
             return true;
         }
 
@@ -48,7 +46,7 @@ public class WallFragment extends BaseAbstractFragment  {
     @Override
     public void getFragmentViews(View view) {
         // Initialize recycler view
-
+        setOffset(0);
 
 
         mLayoutManager = new LinearLayoutManager(getContext());
@@ -207,27 +205,13 @@ public class WallFragment extends BaseAbstractFragment  {
 
     @Override
     public void setSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putParcelable(RECYCLER_STATE_TAG, mLayoutManager.onSaveInstanceState());
-
     }
 
     @Override
     protected void getSaveInstanceState(Bundle savedInstanceState) {
-        onViewStateRestored(savedInstanceState);
-
     }
 
-    @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
 
-        if(savedInstanceState != null)
-        {
-            Parcelable savedRecyclerLayoutState = savedInstanceState.getParcelable(RECYCLER_STATE_TAG);
-            mLayoutManager.onRestoreInstanceState(savedRecyclerLayoutState);
-        }
-    }
 
 
     @Override
